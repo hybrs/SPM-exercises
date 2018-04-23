@@ -71,7 +71,7 @@ int main(int argc, char * argv[]) {
   auto elapsed = chrono::high_resolution_clock::now() - start;
   auto msec    = chrono::duration_cast<chrono::milliseconds>(elapsed).count();
 
-  cout << "Elapsed time is " << msec << " msecs with inputsize " << n_task
-		  << " ms-obt is "<< ms_obtain << " ms-del is " << ms_deliver << endl;
+  cout << "Elapsed time " << msec << " msecs - inputsize " << n_task
+		  << " - ms-obt "<< ms_obtain << " - ms-del " << ms_deliver << endl;
   return(0);
 }

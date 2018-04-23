@@ -81,8 +81,8 @@ void active_delay(int msecs) {
 
 // print items in a vector, just for check
 void print_vec(std::vector<int> v) {
-  for(auto it : v)
-    std::cout << it << " ";
+  for(int i = 0; i < v.size(); i++)
+    std::cout << i << ": "<< v[i] << " ";
   std::cout << std::endl;
   return;
 }

@@ -35,10 +35,11 @@
 
 using namespace std;
 
-// queues to host messages from one stage to the next one.
-// four stages => three queues
+// queues to host index corresponding to tasks
 queue<int> toWork, toDeliver;
+//vectors of tasks
 vector <int> tasks, completed_tasks;
+//completed tasks GLOBAL counter
 safeInt delivered_tasks;
 
 void Source(int n_task, int nw) {
@@ -46,7 +47,7 @@ void Source(int n_task, int nw) {
 	    << "generating: " << endl;
   for(int i=0; i<n_task; i++) {
     tasks[i] = rand()%10000 + 1;
-    toWork.push(i);
+    toWork.push(i+1);
   }
   cout << "Generated: ";
   //print_vec(tasks);
@@ -56,29 +57,28 @@ void Source(int n_task, int nw) {
   return;
 }
 
-
-
 void Worker(int ms_obt, int ms_del) {
   while(true) {
     // blocking read from input queue
 	active_delay(ms_obt);
     int v = toWork.pop();
-
-    // manage EOS (propagate & terminate)
+    //cout << "Worker: recieved" << v << endl;
     if(v == EOS) {
       toDeliver.push(v);
       return;
     }
 
-    // then deliver the result  to the next stage
+    //Delay delivering the result 
     active_delay(ms_del);
-    completed_tasks[v] = n_primes(tasks[v]);
+    int np = n_primes(tasks[v-1]);
+    //cout << "task[" << (v-1) << "]: " << tasks[v-1] 
+    //	<< " n_primes: " << np << endl;
+    completed_tasks[v-1] = np;
     toDeliver.push(v);
     delivered_tasks.incr();
   }
   return;
 }
-
 
 void Drain(int nw) {
   while(true) {
@@ -130,8 +130,8 @@ int main(int argc, char * argv[]) {
   auto elapsed = chrono::high_resolution_clock::now() - start;
   auto msec    = chrono::duration_cast<chrono::milliseconds>(elapsed).count();
 
-  cout << "Elapsed time is " << msec << " msecs with inputsize " << n_task
-		  << " ms-obt is "<< ms_obtain << " ms-del is " << ms_deliver
-		  << " and numb_w " << nw << endl;
+  cout << "Elapsed time " << msec << " msecs - inputsize " << n_task
+		  << " - ms-obt "<< ms_obtain << " - ms-del " << ms_deliver
+		  << " - n_workers " << nw << endl;
   return(0);
 }
